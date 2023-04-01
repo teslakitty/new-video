@@ -10,3 +10,32 @@ const firebaseConfig = {
   };
   firebase.initializeApp(firebaseConfig);
   
+
+
+
+  // Initialize the Twilio Video client
+const accessToken = 'LNU3271Q48Bu4Ewkb5TOfuo7PLaDFvh1';
+const videoClient = new Twilio.Video.Client(accessToken);
+
+
+
+
+
+// Connect to a room and publish your local video feed
+const roomName = 'my-room';
+videoClient.connect({ roomName }).then(room => {
+  const localStream = new Twilio.Video.LocalVideoTrack();
+  room.localParticipant.publishTrack(localStream);
+});
+
+
+
+
+// Subscribe to remote video feeds
+room.on('participantConnected', participant => {
+    participant.on('trackSubscribed', track => {
+      const remoteStream = track.attach();
+      document.getElementById('remote-feeds').appendChild(remoteStream);
+    });
+  });
+  
