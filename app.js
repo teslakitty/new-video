@@ -14,7 +14,7 @@ const firebaseConfig = {
 
 
   // Initialize the Twilio Video client
-const accessToken = 'LNU3271Q48Bu4Ewkb5TOfuo7PLaDFvh1';
+const accessToken = 'SKf92f4930aff2ea5a2d1fa3dd83b6de72';
 const videoClient = new Twilio.Video.Client(accessToken);
 
 
