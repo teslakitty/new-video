@@ -1,0 +1,47 @@
+#app {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+  
+  #local-feed {
+    width: 320px;
+    height: 240px;
+    margin-bottom: 20px;
+  }
+  
+  #remote-feeds {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  
+  #remote-feeds video {
+    width: 320px;
+    height: 240px;
+    object-fit: cover;
+  }
+  
+  #controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  button {
+    padding: 10px;
+    border: none;
+    background-color: #333;
+    color: white;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #555;
+  }
+  

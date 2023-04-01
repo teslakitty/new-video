@@ -1,1 +1,24 @@
-<link rel="manifest" href="/manifest.json">
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Video Chat App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <div id="local-feed"></div>
+    <div id="remote-feeds"></div>
+    <div id="controls">
+      <button id="start-call">Start Call</button>
+      <button id="end-call">End Call</button>
+      <button id="mute-audio">Mute Audio</button>
+      <button id="mute-video">Mute Video</button>
+    </div>
+  </div>
+  <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js"></script>
+  <script src="https://www.twilio.com/webrtc/v1.15/twilio-video.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
