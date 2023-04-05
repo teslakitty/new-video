@@ -1,3 +1,7 @@
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import 'firebase/firestore';
+
 const firebaseConfig = {
   apiKey: "AIzaSyDA0X9OkthCMMvhxXIwUvVjeqzjNNT8b_k",
   authDomain: "newvideo2212.firebaseapp.com",
@@ -8,9 +12,13 @@ const firebaseConfig = {
   appId: "1:283500325791:web:4715dfd7a607b511832baa"
 };
 
+
 firebase.initializeApp(firebaseConfig);
+
 const auth = firebase.auth();
-const provider = new firebase.auth.GoogleAuthProvider();
+const firestore = firebase.firestore();
+
+export { auth, firestore };
 
 // Initialize Agora SDK and create client object
 const agoraAppId = '<5f10b8d038114e4494671eba6636a671>';
@@ -19,7 +27,7 @@ const client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
 // Function to join a channel
 async function joinChannel(channelName, uid) {
   // Create token for user authentication
-  const token = '<your-Agora-token-here>';
+  const token = '<007eJxTYGiLLvx79qrbxGrW2g8f31qamQvoqnnfvOAWFbVdtOjGi0MKDKZphgZJFikGxhaGhiapJiaWJmbmhqlJiWZmxmaJQGboDp2UhkBGhu0fN7EwMkAgiM/CkJuaX87AAABslh/p>';
 
   // Join the channel using Agora SDK
   await client.join(agoraAppId, channelName, token, uid);
