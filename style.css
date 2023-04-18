@@ -64,3 +64,21 @@ body {
   visibility: visible !important;
   opacity: 1 !important;
 }
+
+
+#join-button,
+#sign-in-button {
+  background-color: #0275d8;
+  color: white;
+  font-size: 16px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+#join-button:hover,
+#sign-in-button:hover {
+  background-color: #01509b;
+}
