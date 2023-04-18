@@ -1,17 +1,11 @@
-import firebase from '/firebase/app';
+import firebase from 'firebase/app';
 import '/firebase/auth';
 import 'firebase/database';
+import Twilio from 'twilio-video'; // Import Twilio here
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDA0X9OkthCMMvhxXIwUvVjeqzjNNT8b_k",
-  authDomain: "newvideo2212.firebaseapp.com",
-  databaseURL: "https://newvideo2212-default-rtdb.firebaseio.com",
-  projectId: "newvideo2212",
-  storageBucket: "newvideo2212.appspot.com",
-  messagingSenderId: "283500325791",
-  appId: "1:283500325791:web:4715dfd7a607b511832baa"
+  // your Firebase config here
 };
-
 
 firebase.initializeApp(firebaseConfig);
 
@@ -20,31 +14,40 @@ const firestore = firebase.firestore();
 
 export { auth, firestore };
 
-// Initialize Agora SDK and create client object
-const agoraAppId = '<5f10b8d038114e4494671eba6636a671>';
-const client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' });
+const twilioConfig = {
+  apiKey: 'SKeb8c6e246d50f880e17a36b7e113985c',
+  apiSecret: '6VvsitCcr6UsI8rXU6pJijO7C3lyZDe3',
+};
 
-// Function to join a channel
-async function joinChannel(channelName, uid) {
-  // Create token for user authentication
-  const token = '<007eJxTYGiLLvx79qrbxGrW2g8f31qamQvoqnnfvOAWFbVdtOjGi0MKDKZphgZJFikGxhaGhiapJiaWJmbmhqlJiWZmxmaJQGboDp2UhkBGhu0fN7EwMkAgiM/CkJuaX87AAABslh/p>';
-
-  // Join the channel using Agora SDK
-  await client.join(agoraAppId, channelName, token, uid);
-
-  // Create local audio and video tracks
-  const localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
-  const localVideoTrack = await AgoraRTC.createCameraVideoTrack();
-
-  // Publish local tracks to the channel
-  await client.publish([localAudioTrack, localVideoTrack]);
-
-  // Add the local tracks to the video grid
-  addVideoTrack(localVideoTrack, uid);
-}
+// Initialize Twilio Video SDK and create local tracks
+const connect = async () => {
+  const token = await getToken(); // function to generate Twilio token
+  const roomName = 'cool-video-chat-app';
+  const room = await Twilio.connect(token, {
+    name: roomName,
+  });
+  const localTracks = await Twilio.createLocalTracks({
+    audio: true,
+    video: { width: 640 },
+  });
+  localTracks.forEach(track => {
+    room.localParticipant.publishTrack(track);
+    addVideoTrack(track, room.localParticipant.identity);
+  });
+  room.on('participantConnected', participant => {
+    participant.tracks.forEach(publication => {
+      if (publication.isSubscribed) {
+        addVideoTrack(publication.track, participant.identity);
+      }
+    });
+    participant.on('trackSubscribed', track => {
+      addVideoTrack(track, participant.identity);
+    });
+  });
+};
 
 // Function to add a video track to the video grid
-function addVideoTrack(track, uid) {
+function addVideoTrack(track, identity) {
   // Create a new video element and wrapper
   const videoElement = document.createElement('video');
   videoElement.setAttribute('autoplay', '');
@@ -58,51 +61,59 @@ function addVideoTrack(track, uid) {
   videoGrid.appendChild(videoWrapper);
 
   // Play the track on the new video element
-  track.play(videoElement);
+  track.attach(videoElement);
 }
 
-// Function to leave the channel and unpublish tracks
-async function leaveChannel() {
-  // Unpublish local tracks and leave the channel
-  await client.unpublish();
-  await client.leave();
-
-  // Remove all video elements from the video grid
-  const videoGrid = document.getElementById('video-grid');
-  while (videoGrid.firstChild) {
-    videoGrid.removeChild(videoGrid.firstChild);
+async function getToken() {
+  const response = await fetch('/token');
+  if (!response.ok) {
+    throw new Error('Failed to fetch token');
   }
+  const data = await response.json();
+  return data.token;
 }
 
-// Add event listeners to the control buttons
+// Initialize FirebaseUI
+const ui = new firebaseui.auth.AuthUI(auth);
+
+// Configure FirebaseUI
+const uiConfig = {
+  signInSuccessUrl: '/',
+  signInOptions: [
+    // Add your desired sign-in methods here
+    firebase.auth.GoogleAuthProvider.PROVIDER_ID
+  ],
+  tosUrl: '/',
+  privacyPolicyUrl: '/'
+};
+
+// Show FirebaseUI auth widget
+ui.start('#firebaseui-auth-container', uiConfig);
+
+// Add event listeners to buttons
 document.getElementById('mute-button').addEventListener('click', () => {
-  const localAudioTrack = client.getLocalAudioTrack();
-  if (localAudioTrack) {
-    localAudioTrack.setMuted(!localAudioTrack.isMuted());
+  const localParticipant = Twilio?.video?.room?.localParticipant;
+  if (localParticipant) {
+    localParticipant.audioTracks.forEach(track => {
+      track.isEnabled = !track.isEnabled;
+    });
   }
 });
-document.getElementById('video-button').addEventListener('click', () => {
-  const localVideoTrack = client.getLocalVideoTrack();
-  if (localVideoTrack) {
-    localVideoTrack.setEnabled(!localVideoTrack.isEnabled());
-  }
-});
-document.getElementById('leave-button').addEventListener('click', leaveChannel);
 
-// Add event listener to the sign-in button
-document.getElementById('sign-in-button').addEventListener('click', () => {
-  const ui = new firebaseui.auth.AuthUI(auth);
-  ui.start('#firebaseui-auth-container', {
-    signInOptions: [provider],
-    signInFlow: 'popup',
-    callbacks: {
-      signInSuccessWithAuthResult: (authResult, redirectUrl) => {
-        // Join the channel after successful sign-in
-        const user = authResult.user;
-        const uid = user.uid;
-        joinChannel('cool-video-chat-app', uid);
-        return false;
-      }
-    }
-  });
+document.getElementById('video-button').addEventListener('click', () => {
+  const localParticipant = Twilio?.video?.room?.localParticipant;
+  if (localParticipant) {
+    localParticipant.videoTracks.forEach(track => {
+      track.isEnabled = !track.isEnabled;
+    });
+  }
+});
+
+document.getElementById('leave-button').addEventListener('click', () => {
+  Twilio?.video?.room?.disconnect();
+});
+
+document.getElementById('google-sign-in-button').addEventListener('click', () => {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider);
 });
