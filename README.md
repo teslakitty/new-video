@@ -1,2 +1,2 @@
 # welcome to the new beta catchat videochat working in progress
-# sadly it does not have firebase but its not using agora anymore
+# this is really in beta so no don't go on the website
