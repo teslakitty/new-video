@@ -131,20 +131,3 @@ function removeVideoDiv(elementId)
         Div.remove();
     }
 };
-
-
-
-import AgoraUIKit from 'agora-react-uikit';
- 
-    const App = () => { 
-      const rtcProps = {
-        appId: '5f10b8d038114e4494671eba6636a671', 
-        channel: 'test', 
-        token: null, // enter your channel token as a string 
-      }; 
-      return (
-        <AgoraUIKit rtcProps={rtcProps} /> 
-      ) 
-    };
-    
-    export default App; 
