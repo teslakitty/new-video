@@ -7,9 +7,9 @@ let options =
     // Set the channel name.
     channel: 'meow',
     // Pass your temp token here.
-    token: '3eabec5e3af84fe09409af2300f9ad4e',
+    token: '007eJxTYHhspzhD4+cE+YBNLlo7xWWWin2pi+MS9jA7sr79iPLJzMMKDKZphgZJFikGxhaGhiapJiaWJmbmhqlJiWZmxmaJQOaaZ/dTGgIZGXz6VFkYGSAQxGdhyE3NL2dgAACr5B1+',
     // Set the user ID.
-    uid: 1,
+    uid: 0,
 };
 
 let channelParameters =
@@ -29,7 +29,7 @@ async function startBasicCall()
 {
 // Create an instance of the Agora Engine
 
-const agoraEngine = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+const agoraEngine = AgoraRTC.createClient({ mode: "rtc", codec: "vp9" });
 // Dynamically create a container in the form of a DIV element to play the remote video track.
 const remotePlayerContainer = document.createElement("div");
 // Dynamically create a container in the form of a DIV element to play the local video track.
